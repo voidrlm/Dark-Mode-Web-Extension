@@ -40,7 +40,6 @@ function setTheme(parameter) {
       htmlBg = window.getComputedStyle(
         document.documentElement
       ).backgroundColor;
-      console.log(htmlBg);
       var elementsToIgnore = `
        img,
       svg,
@@ -188,7 +187,6 @@ function getDomain() {
 }
 
 function domainExcluded() {
-  console.log(currentDomain);
   currentDomain = getDomain();
   var exclusionList = [
     "google",
