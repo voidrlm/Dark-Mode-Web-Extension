@@ -1,23 +1,23 @@
 {
-    "name": "Dark Mode",
-    "description": "Enables night mode by creating dark themes for websites on the fly.",
-    "action": {},
-    "manifest_version": 3,
-    "author": "voidrlm",
-    "version": "0.1",
-    "permissions": ["scripting", "activeTab", "webNavigation"],
-    "background": {
-        "service_worker": "background.js",
-        "type": "module"
-    },
-    "icons": {
-        "48": "icon.png"
-    },
-    "content_scripts": [
-        {
-            "matches": ["<all_urls>"],
-            "js": ["content.js"],
-            "run_at": "document_start"
-        }
-    ]
+  "name": "Dark Mode",
+  "description": "Enables night mode by creating dark themes for websites on the fly.",
+  "action": {},
+  "manifest_version": 3,
+  "author": "voidrlm",
+  "version": "0.1",
+  "permissions": ["scripting", "activeTab", "webNavigation", "storage"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "icons": {
+    "48": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
 }

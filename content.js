@@ -1,13 +1,20 @@
 setTheme();
 chrome.runtime.onMessage.addListener(function (request) {
   if (request.args === "clicked") {
+    domainExcluded("fetchList");
     setTheme("clicked");
   }
 });
+
 var currentDomain = getDomain();
 var htmlBg;
 var intervalId;
-var isDomainExcluded = domainExcluded();
+var isDomainExcluded = false;
+
+domainExcluded().then((isExcluded) => {
+  isDomainExcluded = isExcluded;
+});
+
 var isDarkModeOn =
   JSON.parse(localStorage.getItem("darkModeService")) === true &&
   !isDomainExcluded;
@@ -186,50 +193,48 @@ function getDomain() {
   return hostname;
 }
 
-function domainExcluded() {
+async function domainExcluded(parameter = "") {
+  // Function to fetch exclusion list
+  async function fetchExclusionList() {
+    try {
+      const response = await fetch(
+        "https://raw.githubusercontent.com/voidrlm/Dark-Mode-Browser-Extension/main/resources/exclusion-list.json"
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  // Function to get the exclusion list from local storage
+  function getExclusionListFromLocalStorage() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get("exclusionList", (result) => {
+        resolve(
+          Array.isArray(result.exclusionList) ? result.exclusionList : []
+        );
+      });
+    });
+  }
+
+  // Get the current domain (ensure getDomain() is defined elsewhere)
   currentDomain = getDomain();
-  var exclusionList = [
-    "google",
-    "youtube",
-    "x",
-    "reddit",
-    "facebook",
-    "instagram",
-    "canva",
-    "github",
-    "whatsapp",
-    "slack",
-    "trello",
-    "spotify",
-    "chatgpt",
-    "apple",
-    "coinmarketcap",
-    "w3schools",
-    "geeksforgeeks",
-    "mozilla",
-    "stackoverflow",
-    "figma",
-    "tradingview",
-    "ndtv",
-    "sciencenews",
-    "usnews",
-    "chartjs",
-    "vuetifyjs",
-    "westerndigital",
-    "gopro",
-    "theverge",
-    "firstpost",
-    "anydesk",
-    "techspot",
-    "yahoo",
-    "hotstar",
-    "netflix",
-    "leetcode",
-    "jio",
-    "max",
-    "primevideo",
-    "hulu",
-    "twitch",
-  ];
-  return exclusionList.some((domainName) => domainName == currentDomain);
+
+  // Get the exclusion list from local storage
+  let exclusionList = await getExclusionListFromLocalStorage();
+
+  // If no exclusion list is found in local storage, fetch it from the network
+  if (exclusionList.length === 0 || parameter == "fetchList") {
+    console.log("Updating exclusion list");
+    exclusionList = await fetchExclusionList();
+    // Save the fetched exclusion list to local storage for future use
+    chrome.storage.local.set({ exclusionList });
+  }
+  // Check if the current domain is in the exclusion list
+  return exclusionList.some((domainName) => domainName === currentDomain);
 }
