@@ -7,6 +7,7 @@ chrome.runtime.onMessage.addListener(function (request) {
 });
 
 var currentDomain = getDomain();
+console.log(currentDomain);
 var htmlBg;
 var intervalId;
 var isDomainExcluded = false;
@@ -48,36 +49,26 @@ function setTheme(parameter) {
         document.documentElement
       ).backgroundColor;
       var elementsToIgnore = `
-       img,
-      svg,
-      video,
-      iframe,
-      embed,
-      picture,
-      path,
-      .button .avatar,
-      .redTxt,
-      .greenTxt,
-      .rdtxt,
-      .grntxt,
-      .advBar,
-      .slick-slider,
-      .arrow_class,
-      .picker,
-      .imgHolder,
-      canvas,
-      .bg-light,
-      .priceChange,
-      .percent-change,
-      .sparkline-wrapper,
-      .market-up-down,
-      .positive,
-      .negative,
-      .index_val,
-       code,
-       .vjs-poster,
-       .jw-preview
-    `;
+  img,
+  svg,
+  video,
+  iframe,
+  embed,
+  picture,
+  path,
+  .button .avatar,
+  .picker,
+  .imgHolder,
+  canvas,
+  .bg-light,
+  .sparkline-wrapper,
+  code,
+  .vjs-poster,
+  .jw-preview,
+  .feature,
+  [style*="background-image"]
+`;
+
       const darkThemeStyles = `
   body {
     filter: invert(1);
@@ -98,30 +89,82 @@ function setTheme(parameter) {
     filter: none !important;
   }
 
-  .market-up-down, .index_val, .fk-modal-visible, .facets-modal-popup {
+  .facets-modal-popup {
     filter: none !important;
   }
 
-  .fk-modal-visible [style*="background-image"], picture,#video-js,.jw-media{
+  picture,
+  #video-js,
+  .jw-media,
+  [id*="cover"] {
     filter: none !important;
   }
 
-  .footer, footer, footer a, footer p, footer nav, .footer-bg, #c_copyright, .footer--details, .ftr-body, .ftr-cont {
+  .footer,
+  footer,
+  footer a,
+  footer p,
+  footer nav,
+  .footer-bg,
+  #c_copyright,
+  .footer--details,
+  .ftr-body,
+  .ftr-cont {
     filter: none !important;
     background-color: #FFFFFF !important;
     color: #121212 !important;
   }
 
-  [id*="cover"] {
-    filter: none !important;
-  }
-
-  .feature {
-    filter: invert(1) !important;
-  }
-
   .plp-view, #app {
     background-color: #ffff !important;
+  }
+  
+  ${
+    currentDomain === "amazon"
+      ? `#navbar, #navFooter {
+          filter: invert(1) !important;
+        }`
+      : ""
+  }
+
+  ${
+    currentDomain === "nseindia"
+      ? `.market-up-down,.index_val,.redTxt,.greenTxt {
+          filter: invert(1) !important;
+        }`
+      : ""
+  }
+
+  ${
+    currentDomain === "moneycontrol"
+      ? `.changea, .rdtxt, .grntxt, td.red, td.green, 
+          [class*="redtxt"], [class*="greentxt"], 
+          .highlight_green, .highlight_red, 
+          .advBar, .slick-slider, .baradv, 
+          .bardecl, #arrow_class, .green_arw, .red-arw {
+          filter: invert(1) !important;
+        }`
+      : ""
+  }
+
+  ${
+    currentDomain === "flipkart"
+      ? `.fk-modal-visible,.fk-modal-visible [style*="background-image"] {
+          filter: none !important;
+        }`
+      : ""
+  }
+
+  ${
+    currentDomain === "myntra"
+      ? `.image-grid-image, .carousel-base, 
+          [class*="logoContainer"] {
+          filter: invert(1) !important;
+        }
+        .product-imageSliderContainer {
+          filter: none !important;
+        }`
+      : ""
   }
 
   ${
