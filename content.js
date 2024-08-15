@@ -166,7 +166,14 @@ function setTheme(parameter) {
         }`
       : ""
   }
-
+ ${
+   currentDomain === "tickertape"
+     ? `[class*="plot"],.screen-cards-deals-container,
+        .text-green,.text-red {
+          filter: invert(1) !important;
+        }`
+     : ""
+ }
   ${
     htmlBg === "rgba(0, 0, 0, 0)"
       ? ""
