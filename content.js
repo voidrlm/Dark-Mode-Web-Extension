@@ -175,6 +175,13 @@ function setTheme(parameter) {
      : ""
  }
   ${
+    currentDomain === "soundcloud"
+      ? `.onSoundCloudTeaser,.frontHero,.header {
+          filter: invert(1) !important;
+        }`
+      : ""
+  }
+  ${
     htmlBg === "rgba(0, 0, 0, 0)"
       ? ""
       : "html { filter: none !important; background-color: #121212 !important; }"
