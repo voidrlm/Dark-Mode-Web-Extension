@@ -58,7 +58,6 @@ function setTheme(parameter) {
   path,
   .button .avatar,
   .picker,
-  .imgHolder,
   canvas,
   .bg-light,
   .sparkline-wrapper,
@@ -181,6 +180,13 @@ function setTheme(parameter) {
         }`
       : ""
   }
+   ${
+     currentDomain === "ajio"
+       ? `.imgHolder {
+          filter: none !important;
+        }`
+       : ""
+   }
   ${
     htmlBg === "rgba(0, 0, 0, 0)"
       ? ""
