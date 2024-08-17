@@ -186,6 +186,13 @@ function setTheme(parameter) {
           filter: none !important;
         }`
        : ""
+   }  
+   ${
+     currentDomain === "bookmyshow"
+       ? `div [style*="object-fit: cover"],[class*="StyledFooter"]{
+          filter: invert(1) !important;
+        }`
+       : ""
    }
   ${
     htmlBg === "rgba(0, 0, 0, 0)"
