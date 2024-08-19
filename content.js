@@ -65,7 +65,8 @@ function setTheme(parameter) {
   .vjs-poster,
   .jw-preview,
   .feature,
-  [style*="background-image"]
+  [style*="background-image"],
+  #kt_player
 `;
 
       const darkThemeStyles = `
@@ -94,7 +95,7 @@ function setTheme(parameter) {
 
   picture,
   #video-js,
-  .jw-media,
+  .jw-media , 
   [id*="cover"] {
     filter: none !important;
   }
@@ -193,7 +194,20 @@ function setTheme(parameter) {
           filter: invert(1) !important;
         }`
        : ""
-   }
+   }  ${
+        currentDomain === "tatacliq"
+          ? `.DesktopHeader__base {
+          filter: invert(1) !important;
+        }`
+          : ""
+      }
+       ${
+         currentDomain === "ebay"
+           ? `.gh-td,.title-banner__right-image {
+          filter: invert(1) !important;
+        }`
+           : ""
+       }  
   ${
     htmlBg === "rgba(0, 0, 0, 0)"
       ? ""
@@ -274,7 +288,7 @@ async function domainExcluded(parameter = "") {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const data = await response.json();
+      var data = await response.json();
       return Array.isArray(data) ? data : [];
     } catch (error) {
       return [];
