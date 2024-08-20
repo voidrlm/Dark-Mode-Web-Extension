@@ -129,7 +129,7 @@ function setTheme(parameter) {
 
   ${
     currentDomain === "nseindia"
-      ? `.market-up-down,.index_val,.redTxt,.greenTxt {
+      ? `.market-up-down,.index_val,.redTxt,.greenTxt,.graph-container {
           filter: invert(1) !important;
         }`
       : ""
