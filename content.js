@@ -66,7 +66,9 @@ function setTheme(parameter) {
   .jw-preview,
   .feature,
   [style*="background-image"],
-  #kt_player
+  #ktplayer,
+  .down,
+  .up,
 `;
 
       const darkThemeStyles = `
