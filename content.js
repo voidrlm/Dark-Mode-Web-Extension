@@ -123,7 +123,7 @@ function setTheme(parameter) {
   
   ${
     currentDomain === "amazon"
-      ? `#navbar, #navFooter {
+      ? `#navbar, #navFooter,.a-section img,.ewc-item-image  {
           filter: invert(1) !important;
         }`
       : ""
