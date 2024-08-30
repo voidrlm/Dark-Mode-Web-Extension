@@ -5,10 +5,9 @@
   "manifest_version": 3,
   "author": "voidrlm",
   "version": "0.1",
-  "permissions": ["scripting", "activeTab", "webNavigation", "storage"],
+  "permissions": ["activeTab", "scripting"],
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "background.js"
   },
   "icons": {
     "48": "icon.png"
