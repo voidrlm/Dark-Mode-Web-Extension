@@ -19,8 +19,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function setTheme() {
-  document.documentElement.style.setProperty("height", "100%", "important");
-  document.body.style.setProperty("height", "100%", "important");
   document.documentElement.style.setProperty(
     "background-color",
     "#121212",
