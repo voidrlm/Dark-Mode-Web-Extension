@@ -19,11 +19,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function setTheme() {
-  document.documentElement.style.height = "100%";
-  document.body.style.height = "100%";
-  document.documentElement.style.backgroundColor = "#121212";
-  document.body.style.backgroundColor = "#121212";
-  document.body.style.color = "#e0e0e0";
+  document.documentElement.style.setProperty("height", "100%", "important");
+  document.body.style.setProperty("height", "100%", "important");
+  document.documentElement.style.setProperty(
+    "background-color",
+    "#121212",
+    "important"
+  );
+  document.body.style.setProperty("background-color", "#121212", "important");
+  document.body.style.setProperty("color", "#e0e0e0", "important");
 
   const excludeSelectors = [
     "img",
@@ -52,22 +56,22 @@ function setTheme() {
   document
     .querySelectorAll(`html *, body *:not(${excludeQuery})`)
     .forEach((element) => {
-      const backgroundColor = window.getComputedStyle(element).backgroundColor;
-
-      if (isWhiteBasedColor(backgroundColor)) {
-        element.style.backgroundColor = "#121212";
-        element.style.color = "#e0e0e0";
-      }
-    });
-
-  document
-    .querySelectorAll("body *:not(" + excludeQuery + ")")
-    .forEach((element) => {
       const computedStyle = window.getComputedStyle(element);
+      const backgroundColor = computedStyle.backgroundColor;
       const color = computedStyle.color;
 
+      // Handle background color
+      if (isWhiteBasedColor(backgroundColor)) {
+        element.style.setProperty("background-color", "#121212", "important");
+      } else if (!isDarkColor(backgroundColor)) {
+        element.style.setProperty("background-color", "#1e1e1e", "important"); // Slightly lighter dark
+      }
+
+      // Handle text color
       if (isDarkColor(color)) {
-        element.style.color = lightenColor(color);
+        element.style.setProperty("color", lightenColor(color), "important");
+      } else if (!isWhiteBasedColor(color)) {
+        element.style.setProperty("color", "#e0e0e0", "important"); // Set text color to a light color
       }
     });
 }
@@ -87,24 +91,24 @@ function removeDarkMode() {
 function isWhiteBasedColor(color) {
   const rgb = color.match(/\d+/g).map(Number);
 
-  // Adjust these thresholds based on your requirements
-  const threshold = 240;
-  return rgb[0] >= threshold && rgb[1] >= threshold && rgb[2] >= threshold;
+  // Adjust these thresholds to be more sensitive to light colors
+  const threshold = 230;
+  return rgb[0] > threshold && rgb[1] > threshold && rgb[2] > threshold;
 }
 
 // Helper function to determine if a color is dark
 function isDarkColor(color) {
   const rgb = color.match(/\d+/g).map(Number);
-  return rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114 < 186;
+  return rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114 < 150;
 }
 
 // Helper function to lighten a color
 function lightenColor(color) {
   const rgb = color.match(/\d+/g).map(Number);
-  return `rgb(${Math.min(rgb[0] + 40, 255)}, ${Math.min(
-    rgb[1] + 40,
+  return `rgb(${Math.min(rgb[0] + 100, 255)}, ${Math.min(
+    rgb[1] + 100,
     255
-  )}, ${Math.min(rgb[2] + 40, 255)})`;
+  )}, ${Math.min(rgb[2] + 100, 255)})`;
 }
 
 // Observer to monitor changes in the document
