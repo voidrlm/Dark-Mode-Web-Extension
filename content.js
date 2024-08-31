@@ -1,5 +1,7 @@
 // Initialize dark mode state from localStorage
-let isDarkMode = localStorage.getItem("darkMode") === "true";
+let isDarkMode =
+  localStorage.getItem("darkMode") === "true" ||
+  localStorage.getItem("darkMode") == null;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "toggleTheme") {
