@@ -25,7 +25,6 @@ function setTheme() {
     "important"
   );
   document.body.style.setProperty("background-color", "#121212", "important");
-  document.body.style.setProperty("color", "#e0e0e0", "important");
 
   const excludeSelectors = [
     "img",
@@ -65,11 +64,9 @@ function setTheme() {
         element.style.setProperty("background-color", "#1e1e1e", "important"); // Slightly lighter dark
       }
 
-      // Handle text color
+      // Handle text color: Only change if the color is dark
       if (isDarkColor(color)) {
         element.style.setProperty("color", lightenColor(color), "important");
-      } else if (!isWhiteBasedColor(color)) {
-        element.style.setProperty("color", "#e0e0e0", "important"); // Set text color to a light color
       }
     });
 }
@@ -77,8 +74,6 @@ function setTheme() {
 function removeDarkMode() {
   document.documentElement.style.removeProperty("background-color");
   document.body.style.removeProperty("background-color");
-  document.body.style.removeProperty("color");
-
   document.querySelectorAll("body *").forEach((element) => {
     element.style.removeProperty("background-color");
     element.style.removeProperty("color");
@@ -88,8 +83,6 @@ function removeDarkMode() {
 // Helper function to determine if a color is close to white
 function isWhiteBasedColor(color) {
   const rgb = color.match(/\d+/g).map(Number);
-
-  // Adjust these thresholds to be more sensitive to light colors
   const threshold = 230;
   return rgb[0] > threshold && rgb[1] > threshold && rgb[2] > threshold;
 }
