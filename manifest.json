@@ -5,7 +5,7 @@
   "manifest_version": 3,
   "author": "voidrlm",
   "version": "0.1",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage", "contextMenus"],
   "background": {
     "service_worker": "background.js"
   },

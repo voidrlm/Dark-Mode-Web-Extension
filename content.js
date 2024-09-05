@@ -1,24 +1,23 @@
 // Initialize dark mode state from localStorage
-let isDarkMode =
-  localStorage.getItem("darkMode") === "true" ||
-  localStorage.getItem("darkMode") == null;
-
+let isDarkMode = false;
+let isExcluded = false;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "toggleTheme") {
-    isDarkMode = !isDarkMode;
-    localStorage.setItem("darkMode", isDarkMode); // Save the state to localStorage
-
-    if (isDarkMode) {
-      setTheme();
-    } else {
-      removeDarkMode();
+    if (!isExcluded) {
+      isDarkMode = !isDarkMode;
+      localStorage.setItem("darkMode", isDarkMode); // Save the state to localStorage
+      if (isDarkMode) {
+        setTheme();
+      } else {
+        removeDarkMode();
+      }
+      sendResponse({ status: "Toggled", isDarkMode });
     }
-
-    sendResponse({ status: "Toggled", isDarkMode });
   }
 });
 
 function setTheme() {
+  console.log("set");
   document.documentElement.style.setProperty(
     "background-color",
     "#121212",
@@ -74,7 +73,7 @@ function setTheme() {
 function removeDarkMode() {
   document.documentElement.style.removeProperty("background-color");
   document.body.style.removeProperty("background-color");
-  document.querySelectorAll("body *").forEach((element) => {
+  document.querySelectorAll("html *, body *").forEach((element) => {
     element.style.removeProperty("background-color");
     element.style.removeProperty("color");
   });
@@ -112,17 +111,25 @@ function monitor() {
   observer.observe(document.body, {
     childList: true,
     subtree: true,
-    attribute: true,
   });
 }
 
 function checkBody() {
   if (document.body) {
+    isDarkMode =
+      localStorage.getItem("darkMode") == "true" ||
+      localStorage.getItem("darkMode") == null;
+    if (isDarkMode) setTheme();
     monitor();
   } else {
     console.log("Document body not yet available. Retrying...");
-    setTimeout(checkBody, 50); // Retry after 50ms
+    setTimeout(checkBody, 100); // Retry after 50ms
   }
 }
 
-setTimeout(checkBody, 50);
+chrome.runtime.sendMessage({ action: "checkDomain" }, (response) => {
+  isExcluded = response.exists;
+  if (!response.exists) {
+    checkBody();
+  }
+});
