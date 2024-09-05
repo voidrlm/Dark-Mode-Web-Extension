@@ -5,7 +5,7 @@ chrome.action.onClicked.addListener((tab) => {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "addDomain",
-    title: "Add/Remove Domain",
+    title: "Include/Exclude from Dark Mode Service",
     contexts: ["all"],
   });
 });
