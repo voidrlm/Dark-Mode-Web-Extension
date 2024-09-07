@@ -4,14 +4,14 @@ chrome.action.onClicked.addListener((tab) => {
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: "addDomain",
+    id: "starStopService",
     title: "Include/Exclude from Dark Mode Service",
     contexts: ["all"],
   });
 });
 
 chrome.runtime.onMessage.addListener((request) => {
-  if (request.action === "toggleTheme") {
+  if (request.action === "changeIcon") {
     // Correctly set the icon path based on the theme
     const iconPath =
       request.icon == "dark"
@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener((request) => {
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === "addDomain") {
+  if (info.menuItemId === "starStopService") {
     const hostname = new URL(tab.url).hostname;
     const { excludedDomainsForDarkTheme = [] } = await chrome.storage.local.get(
       "excludedDomainsForDarkTheme"
@@ -47,8 +47,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       await chrome.storage.local.set({ excludedDomainsForDarkTheme });
     }
     chrome.tabs.sendMessage(tab.id, {
-      action: "addDomain",
-      isExcluded: excluded,
+      action: "starStopService",
+      valueSetOnChromStorage: !excluded,
     });
   }
 });

@@ -9,22 +9,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       localStorage.setItem("darkMode", isDarkMode); // Save the state to localStorage
       if (isDarkMode) {
         setTheme();
-        chrome.runtime.sendMessage({ action: "toggleTheme", icon: "dark" });
       } else {
         removeDarkMode();
       }
-      sendResponse({ status: "Toggled", isDarkMode });
     } else {
-      chrome.runtime.sendMessage({ action: "toggleTheme", icon: "pause" });
+      chrome.runtime.sendMessage({ action: "changeIcon", icon: "pause" });
     }
   }
-  if (request.action === "addDomain") {
-    isExcluded = !request.isExcluded;
-    if (isExcluded) {
-      chrome.runtime.sendMessage({ action: "toggleTheme", icon: "pause" });
-    } else {
+  //When user right clicks and starts and stops the dark mode service
+  if (request.action === "starStopService") {
+    if (request.valueSetOnChromStorage) {
       removeDarkMode();
+
+      chrome.runtime.sendMessage({ action: "changeIcon", icon: "pause" });
+    } else {
+      setTheme();
     }
+    isExcluded = request.valueSetOnChromStorage == true;
   }
 });
 
@@ -79,6 +80,9 @@ function setTheme() {
         element.style.setProperty("color", lightenColor(color), "important");
       }
     });
+  isDarkMode = true;
+  localStorage.setItem("darkMode", true);
+  chrome.runtime.sendMessage({ action: "changeIcon", icon: "dark" });
 }
 
 function removeDarkMode() {
@@ -88,7 +92,9 @@ function removeDarkMode() {
     element.style.removeProperty("background-color");
     element.style.removeProperty("color");
   });
-  chrome.runtime.sendMessage({ action: "toggleTheme", icon: "light" });
+  isDarkMode = false;
+  localStorage.setItem("darkMode", false);
+  chrome.runtime.sendMessage({ action: "changeIcon", icon: "light" });
 }
 
 // Helper function to determine if a color is close to white
@@ -125,14 +131,22 @@ function monitor() {
     subtree: true,
   });
 }
+function isDarkModeInLocalStorage() {
+  return (
+    localStorage.getItem("darkMode") == "true" ||
+    localStorage.getItem("darkMode") == null
+  );
+}
 
 function checkBody() {
   if (document.body) {
-    isDarkMode =
-      localStorage.getItem("darkMode") == "true" ||
-      localStorage.getItem("darkMode") == null;
-    if (isDarkMode) setTheme();
-    monitor();
+    isDarkMode = isDarkModeInLocalStorage();
+    if (isDarkMode) {
+      monitor();
+      setTheme();
+    } else {
+      chrome.runtime.sendMessage({ action: "changeIcon", icon: "light" });
+    }
   } else {
     console.log("Document body not yet available. Retrying...");
     setTimeout(checkBody, 100); // Retry after 50ms
@@ -144,6 +158,6 @@ chrome.runtime.sendMessage({ action: "checkDomain" }, (response) => {
   if (!response.exists) {
     checkBody();
   } else {
-    chrome.runtime.sendMessage({ action: "toggleTheme", icon: "pause" });
+    chrome.runtime.sendMessage({ action: "changeIcon", icon: "pause" });
   }
 });
