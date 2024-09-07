@@ -10,7 +10,7 @@
     "service_worker": "background.js"
   },
   "icons": {
-    "48": "icon.png"
+    "48": "icons/moon.png"
   },
   "content_scripts": [
     {

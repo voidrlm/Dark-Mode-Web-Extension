@@ -1,6 +1,7 @@
 // Initialize dark mode state from localStorage
 let isDarkMode = false;
 let isExcluded = false;
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "toggleTheme") {
     if (!isExcluded) {
@@ -8,16 +9,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       localStorage.setItem("darkMode", isDarkMode); // Save the state to localStorage
       if (isDarkMode) {
         setTheme();
+        chrome.runtime.sendMessage({ action: "toggleTheme", icon: "dark" });
       } else {
         removeDarkMode();
       }
       sendResponse({ status: "Toggled", isDarkMode });
+    } else {
+      chrome.runtime.sendMessage({ action: "toggleTheme", icon: "pause" });
+    }
+  }
+  if (request.action === "addDomain") {
+    isExcluded = !request.isExcluded;
+    if (isExcluded) {
+      chrome.runtime.sendMessage({ action: "toggleTheme", icon: "pause" });
+    } else {
+      removeDarkMode();
     }
   }
 });
 
 function setTheme() {
-  console.log("set");
   document.documentElement.style.setProperty(
     "background-color",
     "#121212",
@@ -77,6 +88,7 @@ function removeDarkMode() {
     element.style.removeProperty("background-color");
     element.style.removeProperty("color");
   });
+  chrome.runtime.sendMessage({ action: "toggleTheme", icon: "light" });
 }
 
 // Helper function to determine if a color is close to white
@@ -131,5 +143,7 @@ chrome.runtime.sendMessage({ action: "checkDomain" }, (response) => {
   isExcluded = response.exists;
   if (!response.exists) {
     checkBody();
+  } else {
+    chrome.runtime.sendMessage({ action: "toggleTheme", icon: "pause" });
   }
 });

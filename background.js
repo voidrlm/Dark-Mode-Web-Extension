@@ -10,14 +10,30 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.runtime.onMessage.addListener((request) => {
+  if (request.action === "toggleTheme") {
+    // Correctly set the icon path based on the theme
+    const iconPath =
+      request.icon == "dark"
+        ? "icons/moon.png"
+        : request.icon == "light"
+        ? "icons/sun.png"
+        : "icons/pause.png";
+    // Change the extension icon
+    chrome.action.setIcon({ path: iconPath });
+    // Returning true to indicate the response will be sent asynchronously
+    return true;
+  }
+});
+
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "addDomain") {
     const hostname = new URL(tab.url).hostname;
     const { excludedDomainsForDarkTheme = [] } = await chrome.storage.local.get(
       "excludedDomainsForDarkTheme"
     );
-
-    if (excludedDomainsForDarkTheme.includes(hostname)) {
+    const excluded = excludedDomainsForDarkTheme.includes(hostname);
+    if (excluded) {
       // Remove domain
       const updatedDomains = excludedDomainsForDarkTheme.filter(
         (domain) => domain !== hostname
@@ -30,6 +46,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       excludedDomainsForDarkTheme.push(hostname);
       await chrome.storage.local.set({ excludedDomainsForDarkTheme });
     }
+    chrome.tabs.sendMessage(tab.id, {
+      action: "addDomain",
+      isExcluded: excluded,
+    });
   }
 });
 
