@@ -1,14 +1,14 @@
 // Initialize dark mode state from localStorage
 let isDarkMode = false;
 let isExcluded = false;
-
+var observer;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "toggleTheme") {
     if (!isExcluded) {
       isDarkMode = !isDarkMode;
       localStorage.setItem("darkMode", isDarkMode); // Save the state to localStorage
       if (isDarkMode) {
-        setTheme();
+        checkBody();
       } else {
         removeDarkMode();
       }
@@ -20,10 +20,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "starStopService") {
     if (request.valueSetOnChromStorage) {
       removeDarkMode();
-
       chrome.runtime.sendMessage({ action: "changeIcon", icon: "pause" });
     } else {
-      setTheme();
+      checkBody();
     }
     isExcluded = request.valueSetOnChromStorage == true;
   }
@@ -57,6 +56,7 @@ function setTheme() {
     ".down",
     ".up",
     ".video-js",
+    ".ytp-scrubber-button",
   ];
 
   const excludeQuery = excludeSelectors.join(", ");
@@ -95,6 +95,7 @@ function removeDarkMode() {
   isDarkMode = false;
   localStorage.setItem("darkMode", false);
   chrome.runtime.sendMessage({ action: "changeIcon", icon: "light" });
+  stopMonitor();
 }
 
 // Helper function to determine if a color is close to white
@@ -121,7 +122,7 @@ function lightenColor(color) {
 
 // Observer to monitor changes in the document
 function monitor() {
-  const observer = new MutationObserver(() => {
+  observer = new MutationObserver(() => {
     if (isDarkMode) {
       setTheme();
     }
@@ -130,6 +131,10 @@ function monitor() {
     childList: true,
     subtree: true,
   });
+}
+
+function stopMonitor() {
+  observer.disconnect();
 }
 function isDarkModeInLocalStorage() {
   return (
