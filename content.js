@@ -32,10 +32,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function setTheme() {
   document.documentElement.style.setProperty(
     "background-color",
-    "#121212",
+    "#14141a",
     "important"
   );
-  document.body.style.setProperty("background-color", "#121212", "important");
+  document.body.style.setProperty("background-color", "#14141a", "important");
 
   const excludeSelectors = [
     "img",
@@ -70,7 +70,7 @@ function setTheme() {
 
       // Handle background color
       if (isWhiteBasedColor(backgroundColor)) {
-        element.style.setProperty("background-color", "#121212", "important");
+        element.style.setProperty("background-color", "#14141a", "important");
       } else if (!isDarkColor(backgroundColor)) {
         element.style.setProperty("background-color", "#1e1e1e", "important"); // Slightly lighter dark
       }
